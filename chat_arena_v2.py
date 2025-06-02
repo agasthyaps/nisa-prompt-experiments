@@ -6,6 +6,7 @@ import mimetypes
 from datetime import datetime
 from typing import List, Dict, Optional, Tuple
 import hashlib
+import sqlite3
 
 import streamlit as st
 from dotenv import load_dotenv
@@ -18,9 +19,6 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Constants
-DATA_DIR = "data"
-PROMPTS_FILE = os.path.join(DATA_DIR, "system_prompts.json")
-VOTES_FILE = os.path.join(DATA_DIR, "votes.json")
 SETTINGS_PASSWORD = "admin123"  # Hardcoded password for settings access
 
 # Model configurations
@@ -30,7 +28,7 @@ MODELS = [
     {"id": "gpt-4.1-mini", "name": "GPT-4.1 Mini"},
 ]
 
-# Default system prompts if file doesn't exist
+# Default system prompts if database doesn't exist
 DEFAULT_PROMPTS = [
     {
         "id": "helpful_assistant",
@@ -39,31 +37,108 @@ DEFAULT_PROMPTS = [
     },
 ]
 
-# Create data directory if it doesn't exist
-os.makedirs(DATA_DIR, exist_ok=True)
+# -----------------------------------------------------------------------------
+# Database Functions
+# -----------------------------------------------------------------------------
+
+def init_db():
+    """Initialize the SQLite database with required tables."""
+    conn = sqlite3.connect('nisa_arena.db')
+    c = conn.cursor()
+    
+    # Create prompts table if it doesn't exist
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS prompts (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            prompt TEXT NOT NULL
+        )
+    ''')
+    
+    # Create votes table if it doesn't exist
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS votes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp TEXT NOT NULL,
+            conversation TEXT NOT NULL,
+            left_config TEXT NOT NULL,
+            right_config TEXT NOT NULL,
+            winner TEXT NOT NULL
+        )
+    ''')
+    
+    conn.commit()
+    conn.close()
+
+def load_system_prompts() -> List[Dict[str, str]]:
+    """Load system prompts from database, creating default if doesn't exist."""
+    conn = sqlite3.connect('nisa_arena.db')
+    c = conn.cursor()
+    
+    # Check if we have any prompts
+    c.execute('SELECT COUNT(*) FROM prompts')
+    count = c.fetchone()[0]
+    
+    if count == 0:
+        # Insert default prompts
+        for prompt in DEFAULT_PROMPTS:
+            c.execute('INSERT INTO prompts (id, name, prompt) VALUES (?, ?, ?)',
+                     (prompt['id'], prompt['name'], prompt['prompt']))
+        conn.commit()
+        prompts = DEFAULT_PROMPTS
+    else:
+        # Load existing prompts
+        c.execute('SELECT id, name, prompt FROM prompts')
+        prompts = [{'id': row[0], 'name': row[1], 'prompt': row[2]} for row in c.fetchall()]
+    
+    conn.close()
+    return prompts
+
+def save_system_prompts(prompts: List[Dict[str, str]]) -> None:
+    """Save system prompts to database."""
+    conn = sqlite3.connect('nisa_arena.db')
+    c = conn.cursor()
+    
+    # Clear existing prompts
+    c.execute('DELETE FROM prompts')
+    
+    # Insert new prompts
+    for prompt in prompts:
+        c.execute('INSERT INTO prompts (id, name, prompt) VALUES (?, ?, ?)',
+                 (prompt['id'], prompt['name'], prompt['prompt']))
+    
+    conn.commit()
+    conn.close()
+
+def save_vote(conversation: List[Dict], left_config: Dict, right_config: Dict, winner: str) -> None:
+    """Save voting data to database."""
+    conn = sqlite3.connect('nisa_arena.db')
+    c = conn.cursor()
+    
+    c.execute('''
+        INSERT INTO votes (timestamp, conversation, left_config, right_config, winner)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (
+        datetime.utcnow().isoformat(),
+        json.dumps(conversation),
+        json.dumps(left_config),
+        json.dumps(right_config),
+        winner
+    ))
+    
+    conn.commit()
+    conn.close()
+
+# Initialize database on startup
+init_db()
+
+# with open('data/system_prompts.json', 'r') as f:
+#     existing_prompts = json.load(f)
+#     save_system_prompts(existing_prompts)
 
 # -----------------------------------------------------------------------------
 # Utility Functions
 # -----------------------------------------------------------------------------
-
-def load_system_prompts() -> List[Dict[str, str]]:
-    """Load system prompts from file, creating default if doesn't exist."""
-    if not os.path.exists(PROMPTS_FILE):
-        save_system_prompts(DEFAULT_PROMPTS)
-        return DEFAULT_PROMPTS
-    
-    try:
-        with open(PROMPTS_FILE, 'r') as f:
-            return json.load(f)
-    except:
-        return DEFAULT_PROMPTS
-
-
-def save_system_prompts(prompts: List[Dict[str, str]]) -> None:
-    """Save system prompts to file."""
-    with open(PROMPTS_FILE, 'w') as f:
-        json.dump(prompts, f, indent=2)
-
 
 def hash_password(password: str) -> str:
     """Simple password hashing for comparison."""
@@ -97,30 +172,6 @@ def stream_chat_completion(model: str, messages: List[Dict], temperature: float 
                 yield chunk.choices[0].delta.content
     except Exception as e:
         yield f"Error: {str(e)}"
-
-
-def save_vote(conversation: List[Dict], left_config: Dict, right_config: Dict, winner: str) -> None:
-    """Save voting data to file."""
-    votes = []
-    if os.path.exists(VOTES_FILE):
-        try:
-            with open(VOTES_FILE, 'r') as f:
-                votes = json.load(f)
-        except:
-            votes = []
-    
-    vote_data = {
-        "timestamp": datetime.utcnow().isoformat(),
-        "conversation": conversation,
-        "left": left_config,
-        "right": right_config,
-        "winner": winner
-    }
-    
-    votes.append(vote_data)
-    
-    with open(VOTES_FILE, 'w') as f:
-        json.dump(votes, f, indent=2)
 
 
 # -----------------------------------------------------------------------------
