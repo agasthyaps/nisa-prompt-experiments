@@ -26,7 +26,7 @@ SETTINGS_PASSWORD = "admin123"  # Hardcoded password for settings access
 # Model configurations
 MODELS = [
     {"id": "gpt-4.1", "name": "GPT-4.1"},
-    {"id": "gpt-4.5", "name": "GPT-4.5"},
+    {"id": "gpt-4.5-preview", "name": "GPT-4.5 Preview"},
     {"id": "gpt-4.1-mini", "name": "GPT-4.1 Mini"},
 ]
 
@@ -128,8 +128,8 @@ def save_vote(conversation: List[Dict], left_config: Dict, right_config: Dict, w
 # -----------------------------------------------------------------------------
 
 st.set_page_config(
-    page_title="Chat Arena v2",
-    page_icon="🤖",
+    page_title="nisa vs nisa",
+    page_icon="🧪",
     layout="wide"
 )
 
@@ -168,7 +168,7 @@ with col1:
         st.session_state.show_settings = not st.session_state.show_settings
 
 with col2:
-    st.title("🤖 Chat Arena v2")
+    st.title("nisa vs nisa")
 
 # Settings Panel
 if st.session_state.show_settings:
@@ -254,9 +254,10 @@ if st.session_state.show_settings:
 
 # Main Chat Arena Interface
 if not st.session_state.conversation_started:
-    st.markdown("### Welcome to Chat Arena!")
-    st.markdown("Two AI assistants will compete to provide the best responses to your questions.")
-    st.markdown("Chat with both, then vote for the winner!")
+    st.markdown("### Welcome to nisa vs nisa!")
+    st.markdown("This is a testing grounds for nisa's behavior. Chat with two versions of nisa simultaneously and compare responses.")
+    st.markdown("When you're done, vote for the winner!")
+    st.markdown("🧪")
     
     if st.button("Start New Conversation", type="primary"):
         # Load prompts and models
@@ -295,7 +296,7 @@ elif not st.session_state.voting_phase:
     left_col, right_col = st.columns(2)
     
     with left_col:
-        st.subheader("Assistant A")
+        st.subheader("nisa A")
         for msg in st.session_state.conversation_history:
             with st.chat_message("user"):
                 st.write(msg["user"])
@@ -303,7 +304,7 @@ elif not st.session_state.voting_phase:
                 st.write(msg["left"])
     
     with right_col:
-        st.subheader("Assistant B")
+        st.subheader("nisa B")
         for msg in st.session_state.conversation_history:
             with st.chat_message("user"):
                 st.write(msg["user"])
@@ -420,7 +421,7 @@ else:
     left_col, right_col = st.columns(2)
     
     with left_col:
-        st.subheader("Assistant A")
+        st.subheader("nisa A")
         for msg in st.session_state.conversation_history:
             with st.chat_message("user"):
                 st.write(msg["user"])
@@ -428,7 +429,7 @@ else:
                 st.write(msg["left"])
     
     with right_col:
-        st.subheader("Assistant B")
+        st.subheader("nisa B")
         for msg in st.session_state.conversation_history:
             with st.chat_message("user"):
                 st.write(msg["user"])
@@ -440,7 +441,7 @@ else:
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        if st.button("🏆 Assistant A Wins", type="primary"):
+        if st.button("🏆 nisa A Wins", type="primary"):
             save_vote(
                 st.session_state.conversation_history,
                 st.session_state.left_config,
@@ -453,7 +454,7 @@ else:
             st.info(f"Assistant B was: {st.session_state.right_config['model']['name']} with {st.session_state.right_config['prompt']['name']}")
     
     with col2:
-        if st.button("🏆 Assistant B Wins", type="primary"):
+        if st.button("🏆 nisa B Wins", type="primary"):
             save_vote(
                 st.session_state.conversation_history,
                 st.session_state.left_config,
@@ -462,8 +463,8 @@ else:
             )
             st.balloons()
             st.success("Vote recorded! Thank you!")
-            st.info(f"Assistant A was: {st.session_state.left_config['model']['name']} with {st.session_state.left_config['prompt']['name']}")
-            st.info(f"Assistant B was: {st.session_state.right_config['model']['name']} with {st.session_state.right_config['prompt']['name']}")
+            st.info(f"nisa A was: {st.session_state.left_config['model']['name']} with {st.session_state.left_config['prompt']['name']}")
+            st.info(f"nisa B was: {st.session_state.right_config['model']['name']} with {st.session_state.right_config['prompt']['name']}")
     
     with col3:
         if st.button("🤝 It's a Tie"):
@@ -474,8 +475,8 @@ else:
                 "tie"
             )
             st.success("Vote recorded! Thank you!")
-            st.info(f"Assistant A was: {st.session_state.left_config['model']['name']} with {st.session_state.left_config['prompt']['name']}")
-            st.info(f"Assistant B was: {st.session_state.right_config['model']['name']} with {st.session_state.right_config['prompt']['name']}")
+            st.info(f"nisa A was: {st.session_state.left_config['model']['name']} with {st.session_state.left_config['prompt']['name']}")
+            st.info(f"nisa B was: {st.session_state.right_config['model']['name']} with {st.session_state.right_config['prompt']['name']}")
     
     if st.button("Start New Conversation"):
         st.session_state.conversation_started = False
