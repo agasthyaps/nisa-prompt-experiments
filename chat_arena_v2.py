@@ -25,28 +25,18 @@ SETTINGS_PASSWORD = "admin123"  # Hardcoded password for settings access
 
 # Model configurations
 MODELS = [
-    {"id": "gpt-4", "name": "GPT-4"},
-    {"id": "gpt-4-turbo-preview", "name": "GPT-4 Turbo"},
-    {"id": "gpt-3.5-turbo", "name": "GPT-3.5 Turbo"},
+    {"id": "gpt-4.1", "name": "GPT-4.1"},
+    {"id": "gpt-4.5", "name": "GPT-4.5"},
+    {"id": "gpt-4.1-mini", "name": "GPT-4.1 Mini"},
 ]
 
 # Default system prompts if file doesn't exist
 DEFAULT_PROMPTS = [
     {
         "id": "helpful_assistant",
-        "name": "Helpful Assistant",
+        "name": "!Saved Prompts Didn't Load",
         "prompt": "You are a helpful, harmless, and honest AI assistant."
     },
-    {
-        "id": "creative_writer",
-        "name": "Creative Writer",
-        "prompt": "You are a creative writing assistant who helps users craft engaging stories and content."
-    },
-    {
-        "id": "technical_expert",
-        "name": "Technical Expert",
-        "prompt": "You are a technical expert who provides detailed, accurate answers about programming and technology."
-    }
 ]
 
 # Create data directory if it doesn't exist
@@ -369,56 +359,40 @@ elif not st.session_state.voting_phase:
             with st.chat_message("assistant"):
                 right_placeholder = st.empty()
         
-        # Stream both responses in parallel
-        import concurrent.futures
-        import threading
+        # Create streaming generators
+        left_stream = stream_chat_completion(
+            st.session_state.left_config["model"]["id"],
+            st.session_state.messages_left
+        )
+        right_stream = stream_chat_completion(
+            st.session_state.right_config["model"]["id"],
+            st.session_state.messages_right
+        )
         
-        left_chunks = []
-        right_chunks = []
-        left_done = threading.Event()
-        right_done = threading.Event()
+        # Stream both responses in an interleaved fashion
+        left_done = False
+        right_done = False
         
-        def stream_left():
-            try:
-                for chunk in stream_chat_completion(
-                    st.session_state.left_config["model"]["id"],
-                    st.session_state.messages_left
-                ):
-                    left_chunks.append(chunk)
-            finally:
-                left_done.set()
-        
-        def stream_right():
-            try:
-                for chunk in stream_chat_completion(
-                    st.session_state.right_config["model"]["id"],
-                    st.session_state.messages_right
-                ):
-                    right_chunks.append(chunk)
-            finally:
-                right_done.set()
-        
-        # Start both streams
-        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-            executor.submit(stream_left)
-            executor.submit(stream_right)
-            
-            # Update display while streaming
-            while not (left_done.is_set() and right_done.is_set()):
-                if left_chunks:
-                    left_response = "".join(left_chunks)
+        while not (left_done and right_done):
+            # Process left stream
+            if not left_done:
+                try:
+                    chunk = next(left_stream)
+                    left_response += chunk
                     left_placeholder.markdown(left_response + "▌")
-                if right_chunks:
-                    right_response = "".join(right_chunks)
+                except StopIteration:
+                    left_done = True
+                    left_placeholder.markdown(left_response)
+            
+            # Process right stream
+            if not right_done:
+                try:
+                    chunk = next(right_stream)
+                    right_response += chunk
                     right_placeholder.markdown(right_response + "▌")
-                import time
-                time.sleep(0.05)
-        
-        # Final display without cursor
-        left_response = "".join(left_chunks)
-        right_response = "".join(right_chunks)
-        left_placeholder.markdown(left_response)
-        right_placeholder.markdown(right_response)
+                except StopIteration:
+                    right_done = True
+                    right_placeholder.markdown(right_response)
         
         # Add assistant responses
         st.session_state.messages_left.append({"role": "assistant", "content": left_response})
