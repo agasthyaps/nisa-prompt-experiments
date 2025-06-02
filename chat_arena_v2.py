@@ -174,6 +174,46 @@ def stream_chat_completion(model: str, messages: List[Dict], temperature: float 
         yield f"Error: {str(e)}"
 
 
+def format_response_with_tags(response: str) -> str:
+    """Format response to style inner monologue and output sections."""
+    import re
+    
+    # Replace <innermonologue> tags with styled content
+    def replace_inner_monologue(match):
+        content = match.group(1).strip()
+        return f'<div style="color: #666; font-style: italic; margin-bottom: 16px;"><strong>Inner monologue:</strong><br>{content}</div>'
+    
+    # Replace <output> tags with styled content
+    def replace_output(match):
+        content = match.group(1).strip()
+        return f'<div style="font-weight: bold; margin-top: 16px;"><strong style="font-weight: normal;">Final response:</strong><br>{content}</div>'
+    
+    # Apply replacements
+    formatted = response
+    
+    # Handle inner monologue tags (case insensitive)
+    formatted = re.sub(
+        r'<innermonologue>(.*?)</innermonologue>', 
+        replace_inner_monologue, 
+        formatted, 
+        flags=re.DOTALL | re.IGNORECASE
+    )
+    
+    # Handle output tags (case insensitive)
+    formatted = re.sub(
+        r'<output>(.*?)</output>', 
+        replace_output, 
+        formatted, 
+        flags=re.DOTALL | re.IGNORECASE
+    )
+    
+    # If no tags were found, return the original response
+    if formatted == response:
+        return response
+    
+    return formatted
+
+
 # -----------------------------------------------------------------------------
 # Streamlit App
 # -----------------------------------------------------------------------------
@@ -569,8 +609,8 @@ if st.session_state.show_settings:
 if not st.session_state.conversation_started:
     st.markdown("""
     <div style="text-align: center; margin: 60px 0;">
-        <h1 style="font-size: 84px; margin-bottom: 20px;">nisa vs nisa</h1>
-        <p style="font-size: 24px; color: #666; margin-bottom: 60px;">Choose your chat mode:</p>
+        <h1 style="font-size: 84px; margin-bottom: 20px;">prompt playground</h1>
+        <p style="font-size: 24px; color: #666; margin-bottom: 60px;">choose your chat mode. admins can add or edit prompts (⚙️).</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -580,7 +620,7 @@ if not st.session_state.conversation_started:
         <div class="gradient-border" style="height: 250px; display: flex; align-items: center; justify-content: center;">
             <div style="background: white; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                 <h2 style="font-size: 42px; margin: 0;">single chat</h2>
-                <p style="font-size: 18px; color: #666; margin-top: 10px;">Chat with one AI assistant</p>
+                <p style="font-size: 18px; color: #666; margin-top: 10px;">Chat with a single version of nisa</p>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -594,7 +634,7 @@ if not st.session_state.conversation_started:
         <div class="gradient-border" style="height: 250px; display: flex; align-items: center; justify-content: center;">
             <div style="background: white; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                 <h2 style="font-size: 42px; margin: 0;">head-to-head</h2>
-                <p style="font-size: 18px; color: #666; margin-top: 10px;">Compare two AI assistants</p>
+                <p style="font-size: 18px; color: #666; margin-top: 10px;">Compare two versions of nisa</p>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -668,10 +708,16 @@ elif st.session_state.chat_mode == "single":
     
     else:
         # Display chat history
-        for msg in st.session_state.messages:
-            if msg["role"] != "system":
-                with st.chat_message(msg["role"]):
-                    st.write(msg["content"])
+        chat_container = st.container()
+        with chat_container:
+            for msg in st.session_state.messages:
+                if msg["role"] != "system":
+                    with st.chat_message(msg["role"]):
+                        if msg["role"] == "assistant":
+                            # Display formatted response for assistant messages
+                            st.markdown(format_response_with_tags(msg["content"]), unsafe_allow_html=True)
+                        else:
+                            st.write(msg["content"])
         
         # Input form
         with st.form("chat_input", clear_on_submit=True):
@@ -701,22 +747,30 @@ elif st.session_state.chat_mode == "single":
             user_msg = {"role": "user", "content": content if len(content) > 1 else user_input}
             st.session_state.messages.append(user_msg)
             
-            # Get response
-            with st.chat_message("assistant"):
-                response_placeholder = st.empty()
-                response = ""
+            # Display the new user message and assistant response in the chat container
+            with chat_container:
+                with st.chat_message("user"):
+                    st.write(user_input)
                 
-                for chunk in stream_chat_completion(
-                    st.session_state.current_config["model"]["id"],
-                    st.session_state.messages
-                ):
-                    response += chunk
-                    response_placeholder.markdown(response + "▌")
-                
-                response_placeholder.markdown(response)
+                with st.chat_message("assistant"):
+                    response_placeholder = st.empty()
+                    response = ""
+                    
+                    for chunk in stream_chat_completion(
+                        st.session_state.current_config["model"]["id"],
+                        st.session_state.messages
+                    ):
+                        response += chunk
+                        response_placeholder.markdown(response + "▌")
+                    
+                    response_placeholder.markdown(response)
+                    
+                    # Add assistant response to messages
+                    st.session_state.messages.append({"role": "assistant", "content": response})
             
-            # Add assistant response
-            st.session_state.messages.append({"role": "assistant", "content": response})
+            # After streaming is complete, display the formatted version
+            response_placeholder.markdown(format_response_with_tags(response), unsafe_allow_html=True)
+            
             st.rerun()
         
         if new_chat:
@@ -741,21 +795,26 @@ elif st.session_state.chat_mode == "head2head":
         # Chat interface
         left_col, right_col = st.columns(2)
         
+        # Create containers for the chat histories
         with left_col:
             st.subheader("nisa A")
-            for msg in st.session_state.conversation_history:
-                with st.chat_message("user"):
-                    st.write(msg["user"])
-                with st.chat_message("assistant"):
-                    st.write(msg["left"])
+            left_chat_container = st.container()
+            with left_chat_container:
+                for msg in st.session_state.conversation_history:
+                    with st.chat_message("user"):
+                        st.write(msg["user"])
+                    with st.chat_message("assistant"):
+                        st.markdown(format_response_with_tags(msg["left"]), unsafe_allow_html=True)
         
         with right_col:
             st.subheader("nisa B")
-            for msg in st.session_state.conversation_history:
-                with st.chat_message("user"):
-                    st.write(msg["user"])
-                with st.chat_message("assistant"):
-                    st.write(msg["right"])
+            right_chat_container = st.container()
+            with right_chat_container:
+                for msg in st.session_state.conversation_history:
+                    with st.chat_message("user"):
+                        st.write(msg["user"])
+                    with st.chat_message("assistant"):
+                        st.markdown(format_response_with_tags(msg["right"]), unsafe_allow_html=True)
         
         # Input form
         with st.form("chat_input", clear_on_submit=True):
@@ -790,17 +849,14 @@ elif st.session_state.chat_mode == "head2head":
             left_response = ""
             right_response = ""
             
-            # Create columns for responses
-            left_col_resp, right_col_resp = st.columns(2)
-            
-            # Display user messages
-            with left_col_resp:
+            # Display in the existing chat containers
+            with left_chat_container:
                 with st.chat_message("user"):
                     st.write(user_input)
                 with st.chat_message("assistant"):
                     left_placeholder = st.empty()
             
-            with right_col_resp:
+            with right_chat_container:
                 with st.chat_message("user"):
                     st.write(user_input)
                 with st.chat_message("assistant"):
@@ -841,6 +897,10 @@ elif st.session_state.chat_mode == "head2head":
                         right_done = True
                         right_placeholder.markdown(right_response)
             
+            # After streaming is complete, display formatted versions
+            left_placeholder.markdown(format_response_with_tags(left_response), unsafe_allow_html=True)
+            right_placeholder.markdown(format_response_with_tags(right_response), unsafe_allow_html=True)
+            
             # Add assistant responses
             st.session_state.messages_left.append({"role": "assistant", "content": left_response})
             st.session_state.messages_right.append({"role": "assistant", "content": right_response})
@@ -880,7 +940,7 @@ elif st.session_state.chat_mode == "head2head":
                 with st.chat_message("user"):
                     st.write(msg["user"])
                 with st.chat_message("assistant"):
-                    st.write(msg["left"])
+                    st.markdown(format_response_with_tags(msg["left"]), unsafe_allow_html=True)
         
         with right_col:
             st.markdown("""
@@ -892,7 +952,7 @@ elif st.session_state.chat_mode == "head2head":
                 with st.chat_message("user"):
                     st.write(msg["user"])
                 with st.chat_message("assistant"):
-                    st.write(msg["right"])
+                    st.markdown(format_response_with_tags(msg["right"]), unsafe_allow_html=True)
         
         # Voting buttons
         st.markdown("---")
@@ -958,12 +1018,36 @@ elif st.session_state.chat_mode == "head2head":
                 st.info(f"nisa B was: {st.session_state.right_config['model']['name']} with {st.session_state.right_config['prompt']['name']}")
         
         st.markdown("<br><br>", unsafe_allow_html=True)
-        if st.button("START NEW CONVERSATION", use_container_width=True):
-            st.session_state.conversation_started = False
+        if st.button("NEW PAIRING", use_container_width=True):
+            # Reset conversation state but stay in head-to-head mode
             st.session_state.voting_phase = False
             st.session_state.messages_left = []
             st.session_state.messages_right = []
             st.session_state.conversation_history = []
-            st.session_state.left_config = None
-            st.session_state.right_config = None
+            
+            # Initialize new head-to-head configurations
+            prompts = load_system_prompts()
+            
+            # Randomly select models and prompts
+            left_model = random.choice(MODELS)
+            right_model = random.choice(MODELS)
+            left_prompt = random.choice(prompts)
+            right_prompt = random.choice(prompts)
+            
+            st.session_state.left_config = {
+                "model": left_model,
+                "prompt": left_prompt
+            }
+            st.session_state.right_config = {
+                "model": right_model,
+                "prompt": right_prompt
+            }
+            
+            st.session_state.messages_left = [
+                {"role": "system", "content": left_prompt["prompt"]}
+            ]
+            st.session_state.messages_right = [
+                {"role": "system", "content": right_prompt["prompt"]}
+            ]
+            
             st.rerun() 
