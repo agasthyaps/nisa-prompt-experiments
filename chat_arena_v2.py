@@ -179,10 +179,266 @@ def stream_chat_completion(model: str, messages: List[Dict], temperature: float 
 # -----------------------------------------------------------------------------
 
 st.set_page_config(
-    page_title="nisa vs nisa",
+    page_title="nisa labs",
     page_icon="🧪",
     layout="wide"
 )
+
+# Custom CSS for 80s Apple aesthetic with modern touches
+st.markdown("""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;700&display=swap');
+    
+    /* Global styles */
+    .stApp {
+        background: linear-gradient(180deg, #FBF7F0 0%, #F5F0E8 100%);
+    }
+    
+    /* Hide Streamlit branding */
+    #MainMenu {visibility: hidden;}
+    .stDeployButton {display:none;}
+    footer {visibility: hidden;}
+    
+    /* Custom title styling */
+    h1 {
+        font-family: 'Space Grotesk', sans-serif !important;
+        font-size: 72px !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.02em !important;
+        background: linear-gradient(135deg, #0066CC 0%, #FF6B6B 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-fill-color: transparent;
+        margin-bottom: 2rem !important;
+        text-transform: lowercase;
+    }
+    
+    h2 {
+        font-family: 'Space Grotesk', sans-serif !important;
+        font-size: 48px !important;
+        font-weight: 700 !important;
+        color: #1C1C1C !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    h3 {
+        font-family: 'Space Grotesk', sans-serif !important;
+        font-size: 32px !important;
+        font-weight: 600 !important;
+        color: #1C1C1C !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Button styling - chunky 80s inspired */
+    .stButton > button {
+        font-family: 'IBM Plex Mono', monospace !important;
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 16px 32px !important;
+        border: 4px solid #1C1C1C !important;
+        border-radius: 0 !important;
+        background-color: #FFFFFF !important;
+        color: #1C1C1C !important;
+        box-shadow: 6px 6px 0px #1C1C1C !important;
+        transition: all 0.1s ease !important;
+        margin: 8px 0 !important;
+    }
+    
+    .stButton > button:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 4px 4px 0px #1C1C1C !important;
+    }
+    
+    .stButton > button:active {
+        transform: translate(4px, 4px);
+        box-shadow: 2px 2px 0px #1C1C1C !important;
+    }
+    
+    /* Primary button styling */
+    .stButton > button[kind="primary"] {
+        background: linear-gradient(135deg, #0066CC 0%, #0052A3 100%) !important;
+        color: #FFFFFF !important;
+        border-color: #0066CC !important;
+        box-shadow: 6px 6px 0px #0052A3 !important;
+    }
+    
+    .stButton > button[kind="primary"]:hover {
+        box-shadow: 4px 4px 0px #0052A3 !important;
+    }
+    
+    /* Text input styling */
+    .stTextInput > div > div > input,
+    .stTextArea > div > div > textarea {
+        font-family: 'IBM Plex Mono', monospace !important;
+        font-size: 16px !important;
+        border: 3px solid #1C1C1C !important;
+        border-radius: 0 !important;
+        background-color: #FFFFFF !important;
+        box-shadow: 4px 4px 0px #1C1C1C !important;
+        padding: 12px 16px !important;
+    }
+    
+    .stTextInput > div > div > input:focus,
+    .stTextArea > div > div > textarea:focus {
+        border-color: #0066CC !important;
+        box-shadow: 4px 4px 0px #0066CC !important;
+        outline: none !important;
+    }
+    
+    /* Select box styling */
+    .stSelectbox > div > div {
+        border: 3px solid #1C1C1C !important;
+        border-radius: 0 !important;
+        background-color: #FFFFFF !important;
+        box-shadow: 4px 4px 0px #1C1C1C !important;
+    }
+    
+    /* Chat message styling */
+    .stChatMessage {
+        border: 3px solid #1C1C1C !important;
+        border-radius: 0 !important;
+        background-color: #FFFFFF !important;
+        box-shadow: 4px 4px 0px #1C1C1C !important;
+        margin-bottom: 16px !important;
+        padding: 20px !important;
+    }
+    
+    /* Sidebar styling */
+    section[data-testid="stSidebar"] {
+        background-color: #E8E3DB !important;
+        border-right: 4px solid #1C1C1C !important;
+    }
+    
+    section[data-testid="stSidebar"] .stButton > button {
+        background-color: #E8E3DB !important;
+        border: 3px solid #1C1C1C !important;
+        box-shadow: 3px 3px 0px #1C1C1C !important;
+    }
+    
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        font-family: 'IBM Plex Mono', monospace !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        background-color: #FFFFFF !important;
+        border: 3px solid #1C1C1C !important;
+        border-radius: 0 !important;
+        box-shadow: 3px 3px 0px #1C1C1C !important;
+    }
+    
+    /* Column styling for chat interface */
+    [data-testid="column"] {
+        padding: 20px !important;
+        background-color: rgba(255, 255, 255, 0.5);
+        border: 2px solid #E8E3DB;
+        margin: 10px !important;
+    }
+    
+    /* Success/Error/Warning messages */
+    .stAlert {
+        border: 3px solid #1C1C1C !important;
+        border-radius: 0 !important;
+        box-shadow: 4px 4px 0px #1C1C1C !important;
+        font-family: 'IBM Plex Mono', monospace !important;
+    }
+    
+    /* File uploader */
+    .stFileUploader {
+        border: 3px dashed #1C1C1C !important;
+        border-radius: 0 !important;
+        background-color: #FFFFFF !important;
+        padding: 20px !important;
+    }
+    
+    /* Markdown text */
+    .stMarkdown {
+        font-family: 'Space Grotesk', sans-serif !important;
+        font-size: 18px !important;
+        line-height: 1.6 !important;
+    }
+    
+    /* Special styling for main menu buttons */
+    .main-menu-button {
+        width: 100%;
+        height: 200px !important;
+        font-size: 28px !important;
+        background: linear-gradient(135deg, #FFF 0%, #F5F0E8 100%) !important;
+        border: 6px solid #1C1C1C !important;
+        box-shadow: 12px 12px 0px #1C1C1C !important;
+        margin: 20px 0 !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    .main-menu-button:hover {
+        transform: translate(4px, 4px);
+        box-shadow: 8px 8px 0px #1C1C1C !important;
+        background: linear-gradient(135deg, #0066CC 0%, #0052A3 100%) !important;
+        color: #FFFFFF !important;
+    }
+    
+    /* Voting buttons special styling */
+    .vote-button {
+        height: 120px !important;
+        font-size: 24px !important;
+        background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%) !important;
+        border: 4px solid #1C1C1C !important;
+        box-shadow: 8px 8px 0px #1C1C1C !important;
+    }
+    
+    /* Paper texture overlay */
+    .stApp::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.03;
+        background-image: 
+            repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 35px,
+                rgba(28, 28, 28, 0.03) 35px,
+                rgba(28, 28, 28, 0.03) 70px
+            );
+        pointer-events: none;
+        z-index: 1;
+    }
+    
+    /* Experimental gradient borders */
+    @keyframes gradient-border {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    .gradient-border {
+        background: linear-gradient(135deg, #0066CC, #FF6B6B, #FFD700, #0066CC);
+        background-size: 400% 400%;
+        animation: gradient-border 10s ease infinite;
+        padding: 4px;
+    }
+    
+    /* Code blocks */
+    .stCodeBlock {
+        border: 3px solid #1C1C1C !important;
+        border-radius: 0 !important;
+        box-shadow: 4px 4px 0px #1C1C1C !important;
+        background-color: #1C1C1C !important;
+    }
+    
+    /* Make certain elements more prominent */
+    div[data-testid="stMetricValue"] {
+        font-size: 48px !important;
+        font-weight: 700 !important;
+        font-family: 'IBM Plex Mono', monospace !important;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # Initialize session state
 if "authenticated_settings" not in st.session_state:
@@ -193,6 +449,9 @@ if "show_settings" not in st.session_state:
 
 if "conversation_started" not in st.session_state:
     st.session_state.conversation_started = False
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
 if "messages_left" not in st.session_state:
     st.session_state.messages_left = []
@@ -212,6 +471,9 @@ if "left_config" not in st.session_state:
 if "right_config" not in st.session_state:
     st.session_state.right_config = None
 
+if "chat_mode" not in st.session_state:
+    st.session_state.chat_mode = None
+
 # Header with settings button
 col1, col2 = st.columns([1, 20])
 with col1:
@@ -219,7 +481,7 @@ with col1:
         st.session_state.show_settings = not st.session_state.show_settings
 
 with col2:
-    st.title("nisa vs nisa")
+    st.title("nisa labs")
 
 # Settings Panel
 if st.session_state.show_settings:
@@ -303,233 +565,405 @@ if st.session_state.show_settings:
                 st.session_state.show_settings = False
                 st.rerun()
 
-# Main Chat Arena Interface
+# Main Interface
 if not st.session_state.conversation_started:
-    st.markdown("### Welcome to nisa vs nisa!")
-    st.markdown("This is a testing grounds for nisa's behavior. Chat with two versions of nisa simultaneously and compare responses.")
-    st.markdown("When you're done, vote for the winner!")
-    st.markdown("🧪")
+    st.markdown("""
+    <div style="text-align: center; margin: 60px 0;">
+        <h1 style="font-size: 84px; margin-bottom: 20px;">nisa vs nisa</h1>
+        <p style="font-size: 24px; color: #666; margin-bottom: 60px;">Choose your chat mode:</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    if st.button("Start New Conversation", type="primary"):
-        # Load prompts and models
-        prompts = load_system_prompts()
-        
-        # Randomly select configurations
-        left_prompt = random.choice(prompts)
-        right_prompt = random.choice(prompts)
-        left_model = random.choice(MODELS)
-        right_model = random.choice(MODELS)
-        
-        # Initialize conversation
-        st.session_state.left_config = {
-            "model": left_model,
-            "prompt": left_prompt
-        }
-        st.session_state.right_config = {
-            "model": right_model,
-            "prompt": right_prompt
-        }
-        
-        st.session_state.messages_left = [
-            {"role": "system", "content": left_prompt["prompt"]}
-        ]
-        st.session_state.messages_right = [
-            {"role": "system", "content": right_prompt["prompt"]}
-        ]
-        
-        st.session_state.conversation_started = True
-        st.session_state.conversation_history = []
-        st.session_state.voting_phase = False
-        st.rerun()
-
-elif not st.session_state.voting_phase:
-    # Chat interface
-    left_col, right_col = st.columns(2)
-    
-    with left_col:
-        st.subheader("nisa A")
-        for msg in st.session_state.conversation_history:
-            with st.chat_message("user"):
-                st.write(msg["user"])
-            with st.chat_message("assistant"):
-                st.write(msg["left"])
-    
-    with right_col:
-        st.subheader("nisa B")
-        for msg in st.session_state.conversation_history:
-            with st.chat_message("user"):
-                st.write(msg["user"])
-            with st.chat_message("assistant"):
-                st.write(msg["right"])
-    
-    # Input form
-    with st.form("chat_input", clear_on_submit=True):
-        user_input = st.text_input("Your message:")
-        uploaded_files = st.file_uploader(
-            "Upload images (optional)",
-            type=["png", "jpg", "jpeg"],
-            accept_multiple_files=True
-        )
-        
-        col1, col2, col3 = st.columns([1, 1, 8])
-        with col1:
-            submitted = st.form_submit_button("Send", type="primary")
-        with col2:
-            end_chat = st.form_submit_button("End & Vote")
-    
-    if submitted and user_input:
-        # Prepare message content
-        content = [{"type": "text", "text": user_input}]
-        for file in uploaded_files or []:
-            content.append({
-                "type": "image_url",
-                "image_url": {"url": file_to_data_url(file)}
-            })
-        
-        # Add user message to both conversations
-        user_msg = {"role": "user", "content": content if len(content) > 1 else user_input}
-        st.session_state.messages_left.append(user_msg)
-        st.session_state.messages_right.append(user_msg)
-        
-        # Get responses
-        left_response = ""
-        right_response = ""
-        
-        # Create columns for responses
-        left_col_resp, right_col_resp = st.columns(2)
-        
-        # Display user messages
-        with left_col_resp:
-            with st.chat_message("user"):
-                st.write(user_input)
-            with st.chat_message("assistant"):
-                left_placeholder = st.empty()
-        
-        with right_col_resp:
-            with st.chat_message("user"):
-                st.write(user_input)
-            with st.chat_message("assistant"):
-                right_placeholder = st.empty()
-        
-        # Create streaming generators
-        left_stream = stream_chat_completion(
-            st.session_state.left_config["model"]["id"],
-            st.session_state.messages_left
-        )
-        right_stream = stream_chat_completion(
-            st.session_state.right_config["model"]["id"],
-            st.session_state.messages_right
-        )
-        
-        # Stream both responses in an interleaved fashion
-        left_done = False
-        right_done = False
-        
-        while not (left_done and right_done):
-            # Process left stream
-            if not left_done:
-                try:
-                    chunk = next(left_stream)
-                    left_response += chunk
-                    left_placeholder.markdown(left_response + "▌")
-                except StopIteration:
-                    left_done = True
-                    left_placeholder.markdown(left_response)
-            
-            # Process right stream
-            if not right_done:
-                try:
-                    chunk = next(right_stream)
-                    right_response += chunk
-                    right_placeholder.markdown(right_response + "▌")
-                except StopIteration:
-                    right_done = True
-                    right_placeholder.markdown(right_response)
-        
-        # Add assistant responses
-        st.session_state.messages_left.append({"role": "assistant", "content": left_response})
-        st.session_state.messages_right.append({"role": "assistant", "content": right_response})
-        
-        # Add to conversation history
-        st.session_state.conversation_history.append({
-            "user": user_input,
-            "left": left_response,
-            "right": right_response
-        })
-        
-        st.rerun()
-    
-    if end_chat:
-        st.session_state.voting_phase = True
-        st.rerun()
-
-else:
-    # Voting phase
-    st.markdown("## Time to vote!")
-    st.markdown("Which assistant provided better responses overall?")
-    
-    # Show the conversation
-    left_col, right_col = st.columns(2)
-    
-    with left_col:
-        st.subheader("nisa A")
-        for msg in st.session_state.conversation_history:
-            with st.chat_message("user"):
-                st.write(msg["user"])
-            with st.chat_message("assistant"):
-                st.write(msg["left"])
-    
-    with right_col:
-        st.subheader("nisa B")
-        for msg in st.session_state.conversation_history:
-            with st.chat_message("user"):
-                st.write(msg["user"])
-            with st.chat_message("assistant"):
-                st.write(msg["right"])
-    
-    # Voting buttons
-    st.markdown("---")
-    col1, col2, col3 = st.columns(3)
-    
+    col1, col2 = st.columns(2)
     with col1:
-        if st.button("🏆 nisa A Wins", type="primary"):
-            save_vote(
-                st.session_state.conversation_history,
-                st.session_state.left_config,
-                st.session_state.right_config,
-                "left"
-            )
-            st.balloons()
-            st.success("Vote recorded! Thank you!")
-            st.info(f"Assistant A was: {st.session_state.left_config['model']['name']} with {st.session_state.left_config['prompt']['name']}")
-            st.info(f"Assistant B was: {st.session_state.right_config['model']['name']} with {st.session_state.right_config['prompt']['name']}")
+        st.markdown("""
+        <div class="gradient-border" style="height: 250px; display: flex; align-items: center; justify-content: center;">
+            <div style="background: white; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <h2 style="font-size: 42px; margin: 0;">single chat</h2>
+                <p style="font-size: 18px; color: #666; margin-top: 10px;">Chat with one AI assistant</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("ENTER SINGLE CHAT", type="primary", use_container_width=True):
+            st.session_state.chat_mode = "single"
+            st.session_state.conversation_started = True
+            st.rerun()
     
     with col2:
-        if st.button("🏆 nisa B Wins", type="primary"):
-            save_vote(
-                st.session_state.conversation_history,
-                st.session_state.left_config,
-                st.session_state.right_config,
-                "right"
-            )
-            st.balloons()
-            st.success("Vote recorded! Thank you!")
-            st.info(f"nisa A was: {st.session_state.left_config['model']['name']} with {st.session_state.left_config['prompt']['name']}")
-            st.info(f"nisa B was: {st.session_state.right_config['model']['name']} with {st.session_state.right_config['prompt']['name']}")
-    
-    with col3:
-        if st.button("🤝 It's a Tie"):
-            save_vote(
-                st.session_state.conversation_history,
-                st.session_state.left_config,
-                st.session_state.right_config,
-                "tie"
-            )
-            st.success("Vote recorded! Thank you!")
-            st.info(f"nisa A was: {st.session_state.left_config['model']['name']} with {st.session_state.left_config['prompt']['name']}")
-            st.info(f"nisa B was: {st.session_state.right_config['model']['name']} with {st.session_state.right_config['prompt']['name']}")
-    
-    if st.button("Start New Conversation"):
+        st.markdown("""
+        <div class="gradient-border" style="height: 250px; display: flex; align-items: center; justify-content: center;">
+            <div style="background: white; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <h2 style="font-size: 42px; margin: 0;">head-to-head</h2>
+                <p style="font-size: 18px; color: #666; margin-top: 10px;">Compare two AI assistants</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button("ENTER HEAD-TO-HEAD", type="primary", use_container_width=True):
+            st.session_state.chat_mode = "head2head"
+            st.session_state.conversation_started = True
+            # Initialize head-to-head configurations
+            prompts = load_system_prompts()
+            
+            # Randomly select models and prompts
+            left_model = random.choice(MODELS)
+            right_model = random.choice(MODELS)
+            left_prompt = random.choice(prompts)
+            right_prompt = random.choice(prompts)
+            
+            st.session_state.left_config = {
+                "model": left_model,
+                "prompt": left_prompt
+            }
+            st.session_state.right_config = {
+                "model": right_model,
+                "prompt": right_prompt
+            }
+            
+            st.session_state.messages_left = [
+                {"role": "system", "content": left_prompt["prompt"]}
+            ]
+            st.session_state.messages_right = [
+                {"role": "system", "content": right_prompt["prompt"]}
+            ]
+            st.rerun()
+
+elif st.session_state.chat_mode == "single":
+    # Back button
+    if st.button("← Back to Main Menu"):
         st.session_state.conversation_started = False
+        st.session_state.chat_mode = None
+        st.session_state.messages = []
+        st.rerun()
+    
+    # Single chat interface
+    if not st.session_state.messages:
+        # Initial setup for single chat
+        prompts = load_system_prompts()
+        
+        # Model and prompt selection
+        col1, col2 = st.columns(2)
+        with col1:
+            selected_model = st.selectbox(
+                "Select Model",
+                options=MODELS,
+                format_func=lambda x: x["name"]
+            )
+        
+        with col2:
+            selected_prompt = st.selectbox(
+                "Select System Prompt",
+                options=prompts,
+                format_func=lambda x: x["name"]
+            )
+        
+        if st.button("Start Chat", type="primary"):
+            st.session_state.messages = [
+                {"role": "system", "content": selected_prompt["prompt"]}
+            ]
+            st.session_state.current_config = {
+                "model": selected_model,
+                "prompt": selected_prompt
+            }
+            st.rerun()
+    
+    else:
+        # Display chat history
+        for msg in st.session_state.messages:
+            if msg["role"] != "system":
+                with st.chat_message(msg["role"]):
+                    st.write(msg["content"])
+        
+        # Input form
+        with st.form("chat_input", clear_on_submit=True):
+            user_input = st.text_input("Your message:")
+            uploaded_files = st.file_uploader(
+                "Upload images (optional)",
+                type=["png", "jpg", "jpeg"],
+                accept_multiple_files=True
+            )
+            
+            col1, col2 = st.columns([1, 5])
+            with col1:
+                submitted = st.form_submit_button("Send", type="primary")
+            with col2:
+                new_chat = st.form_submit_button("New Chat")
+        
+        if submitted and user_input:
+            # Prepare message content
+            content = [{"type": "text", "text": user_input}]
+            for file in uploaded_files or []:
+                content.append({
+                    "type": "image_url",
+                    "image_url": {"url": file_to_data_url(file)}
+                })
+            
+            # Add user message
+            user_msg = {"role": "user", "content": content if len(content) > 1 else user_input}
+            st.session_state.messages.append(user_msg)
+            
+            # Get response
+            with st.chat_message("assistant"):
+                response_placeholder = st.empty()
+                response = ""
+                
+                for chunk in stream_chat_completion(
+                    st.session_state.current_config["model"]["id"],
+                    st.session_state.messages
+                ):
+                    response += chunk
+                    response_placeholder.markdown(response + "▌")
+                
+                response_placeholder.markdown(response)
+            
+            # Add assistant response
+            st.session_state.messages.append({"role": "assistant", "content": response})
+            st.rerun()
+        
+        if new_chat:
+            st.session_state.messages = []
+            st.rerun()
+
+elif st.session_state.chat_mode == "head2head":
+    # Back button
+    if st.button("← Back to Main Menu"):
+        st.session_state.conversation_started = False
+        st.session_state.chat_mode = None
+        st.session_state.messages_left = []
+        st.session_state.messages_right = []
+        st.session_state.conversation_history = []
         st.session_state.voting_phase = False
-        st.rerun() 
+        st.session_state.left_config = None
+        st.session_state.right_config = None
+        st.rerun()
+    
+    # Head-to-head interface (existing code)
+    if not st.session_state.voting_phase:
+        # Chat interface
+        left_col, right_col = st.columns(2)
+        
+        with left_col:
+            st.subheader("nisa A")
+            for msg in st.session_state.conversation_history:
+                with st.chat_message("user"):
+                    st.write(msg["user"])
+                with st.chat_message("assistant"):
+                    st.write(msg["left"])
+        
+        with right_col:
+            st.subheader("nisa B")
+            for msg in st.session_state.conversation_history:
+                with st.chat_message("user"):
+                    st.write(msg["user"])
+                with st.chat_message("assistant"):
+                    st.write(msg["right"])
+        
+        # Input form
+        with st.form("chat_input", clear_on_submit=True):
+            user_input = st.text_input("Your message:")
+            uploaded_files = st.file_uploader(
+                "Upload images (optional)",
+                type=["png", "jpg", "jpeg"],
+                accept_multiple_files=True
+            )
+            
+            col1, col2, col3 = st.columns([1, 1, 8])
+            with col1:
+                submitted = st.form_submit_button("Send", type="primary")
+            with col2:
+                end_chat = st.form_submit_button("End & Vote")
+        
+        if submitted and user_input:
+            # Prepare message content
+            content = [{"type": "text", "text": user_input}]
+            for file in uploaded_files or []:
+                content.append({
+                    "type": "image_url",
+                    "image_url": {"url": file_to_data_url(file)}
+                })
+            
+            # Add user message to both conversations
+            user_msg = {"role": "user", "content": content if len(content) > 1 else user_input}
+            st.session_state.messages_left.append(user_msg)
+            st.session_state.messages_right.append(user_msg)
+            
+            # Get responses
+            left_response = ""
+            right_response = ""
+            
+            # Create columns for responses
+            left_col_resp, right_col_resp = st.columns(2)
+            
+            # Display user messages
+            with left_col_resp:
+                with st.chat_message("user"):
+                    st.write(user_input)
+                with st.chat_message("assistant"):
+                    left_placeholder = st.empty()
+            
+            with right_col_resp:
+                with st.chat_message("user"):
+                    st.write(user_input)
+                with st.chat_message("assistant"):
+                    right_placeholder = st.empty()
+            
+            # Create streaming generators
+            left_stream = stream_chat_completion(
+                st.session_state.left_config["model"]["id"],
+                st.session_state.messages_left
+            )
+            right_stream = stream_chat_completion(
+                st.session_state.right_config["model"]["id"],
+                st.session_state.messages_right
+            )
+            
+            # Stream both responses in an interleaved fashion
+            left_done = False
+            right_done = False
+            
+            while not (left_done and right_done):
+                # Process left stream
+                if not left_done:
+                    try:
+                        chunk = next(left_stream)
+                        left_response += chunk
+                        left_placeholder.markdown(left_response + "▌")
+                    except StopIteration:
+                        left_done = True
+                        left_placeholder.markdown(left_response)
+                
+                # Process right stream
+                if not right_done:
+                    try:
+                        chunk = next(right_stream)
+                        right_response += chunk
+                        right_placeholder.markdown(right_response + "▌")
+                    except StopIteration:
+                        right_done = True
+                        right_placeholder.markdown(right_response)
+            
+            # Add assistant responses
+            st.session_state.messages_left.append({"role": "assistant", "content": left_response})
+            st.session_state.messages_right.append({"role": "assistant", "content": right_response})
+            
+            # Add to conversation history
+            st.session_state.conversation_history.append({
+                "user": user_input,
+                "left": left_response,
+                "right": right_response
+            })
+            
+            st.rerun()
+        
+        if end_chat:
+            st.session_state.voting_phase = True
+            st.rerun()
+
+    else:
+        # Voting phase (existing code)
+        st.markdown("""
+        <div style="text-align: center; margin: 40px 0;">
+            <h1 style="font-size: 64px;">time to vote!</h1>
+            <p style="font-size: 24px; color: #666;">Which assistant provided better responses overall?</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Show the conversation
+        left_col, right_col = st.columns(2)
+        
+        with left_col:
+            st.markdown("""
+            <div style="background: rgba(255,255,255,0.8); border: 4px solid #1C1C1C; padding: 20px; margin-bottom: 20px;">
+                <h2 style="text-align: center; margin-bottom: 20px;">nisa A</h2>
+            </div>
+            """, unsafe_allow_html=True)
+            for msg in st.session_state.conversation_history:
+                with st.chat_message("user"):
+                    st.write(msg["user"])
+                with st.chat_message("assistant"):
+                    st.write(msg["left"])
+        
+        with right_col:
+            st.markdown("""
+            <div style="background: rgba(255,255,255,0.8); border: 4px solid #1C1C1C; padding: 20px; margin-bottom: 20px;">
+                <h2 style="text-align: center; margin-bottom: 20px;">nisa B</h2>
+            </div>
+            """, unsafe_allow_html=True)
+            for msg in st.session_state.conversation_history:
+                with st.chat_message("user"):
+                    st.write(msg["user"])
+                with st.chat_message("assistant"):
+                    st.write(msg["right"])
+        
+        # Voting buttons
+        st.markdown("---")
+        st.markdown("""
+        <div style="text-align: center; margin: 40px 0;">
+            <h3 style="font-size: 36px; margin-bottom: 30px;">cast your vote</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.markdown("""
+            <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 48px; margin-bottom: 10px;">🏆</div>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("NISA A WINS", type="primary", use_container_width=True):
+                save_vote(
+                    st.session_state.conversation_history,
+                    st.session_state.left_config,
+                    st.session_state.right_config,
+                    "left"
+                )
+                st.balloons()
+                st.success("Vote recorded! Thank you!")
+                st.info(f"nisa A was: {st.session_state.left_config['model']['name']} with {st.session_state.left_config['prompt']['name']}")
+                st.info(f"nisa B was: {st.session_state.right_config['model']['name']} with {st.session_state.right_config['prompt']['name']}")
+        
+        with col2:
+            st.markdown("""
+            <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 48px; margin-bottom: 10px;">🏆</div>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("NISA B WINS", type="primary", use_container_width=True):
+                save_vote(
+                    st.session_state.conversation_history,
+                    st.session_state.left_config,
+                    st.session_state.right_config,
+                    "right"
+                )
+                st.balloons()
+                st.success("Vote recorded! Thank you!")
+                st.info(f"nisa A was: {st.session_state.left_config['model']['name']} with {st.session_state.left_config['prompt']['name']}")
+                st.info(f"nisa B was: {st.session_state.right_config['model']['name']} with {st.session_state.right_config['prompt']['name']}")
+        
+        with col3:
+            st.markdown("""
+            <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 48px; margin-bottom: 10px;">🤝</div>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("IT'S A TIE", use_container_width=True):
+                save_vote(
+                    st.session_state.conversation_history,
+                    st.session_state.left_config,
+                    st.session_state.right_config,
+                    "tie"
+                )
+                st.success("Vote recorded! Thank you!")
+                st.info(f"nisa A was: {st.session_state.left_config['model']['name']} with {st.session_state.left_config['prompt']['name']}")
+                st.info(f"nisa B was: {st.session_state.right_config['model']['name']} with {st.session_state.right_config['prompt']['name']}")
+        
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        if st.button("START NEW CONVERSATION", use_container_width=True):
+            st.session_state.conversation_started = False
+            st.session_state.voting_phase = False
+            st.session_state.messages_left = []
+            st.session_state.messages_right = []
+            st.session_state.conversation_history = []
+            st.session_state.left_config = None
+            st.session_state.right_config = None
+            st.rerun() 
