@@ -51,9 +51,16 @@ def init_db():
         CREATE TABLE IF NOT EXISTS prompts (
             id TEXT PRIMARY KEY,
             name TEXT NOT NULL,
-            prompt TEXT NOT NULL
+            prompt TEXT NOT NULL,
+            active INTEGER DEFAULT 1
         )
     ''')
+    
+    # Add active column to existing tables if it doesn't exist
+    c.execute("PRAGMA table_info(prompts)")
+    columns = [column[1] for column in c.fetchall()]
+    if 'active' not in columns:
+        c.execute('ALTER TABLE prompts ADD COLUMN active INTEGER DEFAULT 1')
     
     # Create votes table if it doesn't exist
     c.execute('''
@@ -82,14 +89,25 @@ def load_system_prompts() -> List[Dict[str, str]]:
     if count == 0:
         # Insert default prompts
         for prompt in DEFAULT_PROMPTS:
-            c.execute('INSERT INTO prompts (id, name, prompt) VALUES (?, ?, ?)',
-                     (prompt['id'], prompt['name'], prompt['prompt']))
+            c.execute('INSERT INTO prompts (id, name, prompt, active) VALUES (?, ?, ?, ?)',
+                     (prompt['id'], prompt['name'], prompt['prompt'], 1))
         conn.commit()
-        prompts = DEFAULT_PROMPTS
+        prompts = [dict(prompt, active=True) for prompt in DEFAULT_PROMPTS]
     else:
         # Load existing prompts
-        c.execute('SELECT id, name, prompt FROM prompts')
-        prompts = [{'id': row[0], 'name': row[1], 'prompt': row[2]} for row in c.fetchall()]
+        c.execute('SELECT id, name, prompt, active FROM prompts')
+        prompts = [{'id': row[0], 'name': row[1], 'prompt': row[2], 'active': bool(row[3])} for row in c.fetchall()]
+    
+    conn.close()
+    return prompts
+
+def load_active_prompts() -> List[Dict[str, str]]:
+    """Load only active system prompts from database."""
+    conn = sqlite3.connect('nisa_arena.db')
+    c = conn.cursor()
+    
+    c.execute('SELECT id, name, prompt FROM prompts WHERE active = 1')
+    prompts = [{'id': row[0], 'name': row[1], 'prompt': row[2]} for row in c.fetchall()]
     
     conn.close()
     return prompts
@@ -104,8 +122,9 @@ def save_system_prompts(prompts: List[Dict[str, str]]) -> None:
     
     # Insert new prompts
     for prompt in prompts:
-        c.execute('INSERT INTO prompts (id, name, prompt) VALUES (?, ?, ?)',
-                 (prompt['id'], prompt['name'], prompt['prompt']))
+        active = prompt.get('active', True)  # Default to active if not specified
+        c.execute('INSERT INTO prompts (id, name, prompt, active) VALUES (?, ?, ?, ?)',
+                 (prompt['id'], prompt['name'], prompt['prompt'], int(active)))
     
     conn.commit()
     conn.close()
@@ -543,11 +562,32 @@ if st.session_state.show_settings:
             prompts = load_system_prompts()
             
             st.subheader("System Prompts")
+            st.markdown("land on a good prompt? want to test an existing one? use this [sheet](https://docs.google.com/spreadsheets/d/1UlNmas25Y0yEwp_1iVowUwH6od5zvSeZYYdzLlKjH1c/edit?gid=0#gid=0).") 
             
             # Display and edit existing prompts
             updated_prompts = []
             for i, prompt in enumerate(prompts):
-                with st.expander(f"{prompt['name']} ({prompt['id']})"):
+                # Style based on active status
+                status_emoji = "✅" if prompt.get('active', True) else "❌"
+                header_text = f"{status_emoji} {prompt['name']} ({prompt['id']})"
+                
+                with st.expander(header_text):
+                    # Active/Inactive toggle
+                    col1, col2 = st.columns([3, 1])
+                    with col1:
+                        st.write(f"**Status:** {'Active' if prompt.get('active', True) else 'Inactive'}")
+                    with col2:
+                        if prompt.get('active', True):
+                            if st.button("Deactivate", key=f"deactivate_{i}"):
+                                prompt['active'] = False
+                                save_system_prompts(prompts)
+                                st.rerun()
+                        else:
+                            if st.button("Activate", key=f"activate_{i}"):
+                                prompt['active'] = True
+                                save_system_prompts(prompts)
+                                st.rerun()
+                    
                     name = st.text_input("Name", value=prompt['name'], key=f"name_{i}")
                     prompt_text = st.text_area("Prompt", value=prompt['prompt'], key=f"prompt_{i}", height=100)
                     
@@ -576,7 +616,8 @@ if st.session_state.show_settings:
                         updated_prompts.append({
                             "id": prompt['id'],
                             "name": name,
-                            "prompt": prompt_text
+                            "prompt": prompt_text,
+                            "active": prompt.get('active', True)
                         })
             
             # Add new prompt
@@ -610,7 +651,7 @@ if not st.session_state.conversation_started:
     st.markdown("""
     <div style="text-align: center; margin: 60px 0;">
         <h1 style="font-size: 84px; margin-bottom: 20px;">prompt playground</h1>
-        <p style="font-size: 24px; color: #666; margin-bottom: 60px;">choose your chat mode. admins can add or edit prompts (⚙️).</p>
+        <p style="font-size: 24px; color: #666; margin-bottom: 60px;">choose your chat mode. admins can add or edit prompts (⚙️). these nisas don't have access to tools.</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -642,7 +683,7 @@ if not st.session_state.conversation_started:
             st.session_state.chat_mode = "head2head"
             st.session_state.conversation_started = True
             # Initialize head-to-head configurations
-            prompts = load_system_prompts()
+            prompts = load_active_prompts()  # Use only active prompts
             
             # Randomly select models and prompts
             left_model = random.choice(MODELS)
@@ -678,7 +719,7 @@ elif st.session_state.chat_mode == "single":
     # Single chat interface
     if not st.session_state.messages:
         # Initial setup for single chat
-        prompts = load_system_prompts()
+        prompts = load_active_prompts()  # Use only active prompts
         
         # Model and prompt selection
         col1, col2 = st.columns(2)
@@ -1026,7 +1067,7 @@ elif st.session_state.chat_mode == "head2head":
             st.session_state.conversation_history = []
             
             # Initialize new head-to-head configurations
-            prompts = load_system_prompts()
+            prompts = load_active_prompts()
             
             # Randomly select models and prompts
             left_model = random.choice(MODELS)
