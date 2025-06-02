@@ -200,12 +200,18 @@ def format_response_with_tags(response: str) -> str:
     # Replace <innermonologue> tags with styled content
     def replace_inner_monologue(match):
         content = match.group(1).strip()
-        return f'<div style="color: #666; font-style: italic; margin-bottom: 16px;"><strong>Inner monologue:</strong><br>{content}</div>'
+        return f'''<div style="margin-bottom: 16px; opacity: 0.8;">
+            <strong>Inner monologue:</strong><br>
+            <em>{content}</em>
+        </div>'''
     
     # Replace <output> tags with styled content
     def replace_output(match):
         content = match.group(1).strip()
-        return f'<div style="font-weight: bold; margin-top: 16px;"><strong style="font-weight: normal;">Final response:</strong><br>{content}</div>'
+        return f'''<div style="margin-top: 16px;">
+            <strong style="color: #0066CC;">Final response:</strong><br>
+            <strong style="display: block; margin-top: 8px;">{content}</strong>
+        </div>'''
     
     # Apply replacements
     formatted = response
