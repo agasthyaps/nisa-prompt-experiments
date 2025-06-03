@@ -255,31 +255,7 @@ st.markdown("""
     .stDeployButton {display:none;}
     footer {visibility: hidden;}
     
-    /* Global styles - Light mode by default */
-    .stApp {
-        background: linear-gradient(180deg, #FBF7F0 0%, #F5F0E8 100%);
-    }
-    
-    /* Paper texture overlay */
-    .stApp::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0.03;
-        background-image: 
-            repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 35px,
-                rgba(28, 28, 28, 0.03) 35px,
-                rgba(28, 28, 28, 0.03) 70px
-            );
-        pointer-events: none;
-        z-index: 1;
-    }
+    /* Remove forced backgrounds - let Streamlit handle theme colors */
     
     /* Typography - Base styles */
     h1 {
@@ -300,7 +276,6 @@ st.markdown("""
         font-family: 'Space Grotesk', sans-serif !important;
         font-size: 48px !important;
         font-weight: 700 !important;
-        color: #1C1C1C !important;
         margin-bottom: 1.5rem !important;
     }
     
@@ -308,7 +283,6 @@ st.markdown("""
         font-family: 'Space Grotesk', sans-serif !important;
         font-size: 32px !important;
         font-weight: 600 !important;
-        color: #1C1C1C !important;
         margin-bottom: 1rem !important;
     }
     
@@ -327,23 +301,21 @@ st.markdown("""
         text-transform: uppercase;
         letter-spacing: 0.05em;
         padding: 16px 32px !important;
-        border: 4px solid #1C1C1C !important;
+        border: 4px solid currentColor !important;
         border-radius: 0 !important;
-        background-color: #FFFFFF !important;
-        color: #1C1C1C !important;
-        box-shadow: 6px 6px 0px #1C1C1C !important;
+        box-shadow: 6px 6px 0px currentColor !important;
         transition: all 0.1s ease !important;
         margin: 8px 0 !important;
     }
     
     .stButton > button:hover {
         transform: translate(2px, 2px);
-        box-shadow: 4px 4px 0px #1C1C1C !important;
+        box-shadow: 4px 4px 0px currentColor !important;
     }
     
     .stButton > button:active {
         transform: translate(4px, 4px);
-        box-shadow: 2px 2px 0px #1C1C1C !important;
+        box-shadow: 2px 2px 0px currentColor !important;
     }
     
     /* Primary button styling */
@@ -363,12 +335,10 @@ st.markdown("""
     .stTextArea > div > div > textarea {
         font-family: 'IBM Plex Mono', monospace !important;
         font-size: 16px !important;
-        border: 3px solid #1C1C1C !important;
+        border: 3px solid currentColor !important;
         border-radius: 0 !important;
-        background-color: #FFFFFF !important;
-        box-shadow: 4px 4px 0px #1C1C1C !important;
+        box-shadow: 4px 4px 0px currentColor !important;
         padding: 12px 16px !important;
-        color: #1C1C1C !important;
     }
     
     .stTextInput > div > div > input:focus,
@@ -380,32 +350,24 @@ st.markdown("""
     
     /* Select box styling */
     .stSelectbox > div > div {
-        border: 3px solid #1C1C1C !important;
+        border: 3px solid currentColor !important;
         border-radius: 0 !important;
-        background-color: #FFFFFF !important;
-        box-shadow: 4px 4px 0px #1C1C1C !important;
+        box-shadow: 4px 4px 0px currentColor !important;
     }
     
     /* Chat message styling */
     .stChatMessage {
-        border: 3px solid #1C1C1C !important;
+        border: 3px solid currentColor !important;
         border-radius: 0 !important;
-        background-color: #FFFFFF !important;
-        box-shadow: 4px 4px 0px #1C1C1C !important;
+        box-shadow: 4px 4px 0px currentColor !important;
         margin-bottom: 16px !important;
         padding: 20px !important;
     }
     
     /* Sidebar styling */
-    section[data-testid="stSidebar"] {
-        background-color: #E8E3DB !important;
-        border-right: 4px solid #1C1C1C !important;
-    }
-    
     section[data-testid="stSidebar"] .stButton > button {
-        background-color: #E8E3DB !important;
-        border: 3px solid #1C1C1C !important;
-        box-shadow: 3px 3px 0px #1C1C1C !important;
+        border: 3px solid currentColor !important;
+        box-shadow: 3px 3px 0px currentColor !important;
     }
     
     /* Expander styling */
@@ -413,33 +375,31 @@ st.markdown("""
         font-family: 'IBM Plex Mono', monospace !important;
         font-size: 16px !important;
         font-weight: 700 !important;
-        background-color: #FFFFFF !important;
-        border: 3px solid #1C1C1C !important;
+        border: 3px solid currentColor !important;
         border-radius: 0 !important;
-        box-shadow: 3px 3px 0px #1C1C1C !important;
+        box-shadow: 3px 3px 0px currentColor !important;
     }
     
     /* Column styling for chat interface */
     [data-testid="column"] {
         padding: 20px !important;
-        background-color: rgba(255, 255, 255, 0.5);
-        border: 2px solid #E8E3DB;
+        background-color: var(--background-color);
+        border: 2px solid var(--secondary-background-color);
         margin: 10px !important;
     }
     
     /* Success/Error/Warning messages */
     .stAlert {
-        border: 3px solid #1C1C1C !important;
+        border: 3px solid currentColor !important;
         border-radius: 0 !important;
-        box-shadow: 4px 4px 0px #1C1C1C !important;
+        box-shadow: 4px 4px 0px currentColor !important;
         font-family: 'IBM Plex Mono', monospace !important;
     }
     
     /* File uploader */
     .stFileUploader {
-        border: 3px dashed #1C1C1C !important;
+        border: 3px dashed currentColor !important;
         border-radius: 0 !important;
-        background-color: #FFFFFF !important;
         padding: 20px !important;
     }
     
@@ -448,16 +408,15 @@ st.markdown("""
         width: 100%;
         height: 200px !important;
         font-size: 28px !important;
-        background: linear-gradient(135deg, #FFF 0%, #F5F0E8 100%) !important;
-        border: 6px solid #1C1C1C !important;
-        box-shadow: 12px 12px 0px #1C1C1C !important;
+        border: 6px solid currentColor !important;
+        box-shadow: 12px 12px 0px currentColor !important;
         margin: 20px 0 !important;
         transition: all 0.2s ease !important;
     }
     
     .main-menu-button:hover {
         transform: translate(4px, 4px);
-        box-shadow: 8px 8px 0px #1C1C1C !important;
+        box-shadow: 8px 8px 0px currentColor !important;
         background: linear-gradient(135deg, #0066CC 0%, #0052A3 100%) !important;
         color: #FFFFFF !important;
     }
@@ -467,8 +426,8 @@ st.markdown("""
         height: 120px !important;
         font-size: 24px !important;
         background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%) !important;
-        border: 4px solid #1C1C1C !important;
-        box-shadow: 8px 8px 0px #1C1C1C !important;
+        border: 4px solid currentColor !important;
+        box-shadow: 8px 8px 0px currentColor !important;
     }
     
     /* Experimental gradient borders */
@@ -487,10 +446,9 @@ st.markdown("""
     
     /* Code blocks */
     .stCodeBlock {
-        border: 3px solid #1C1C1C !important;
+        border: 3px solid currentColor !important;
         border-radius: 0 !important;
-        box-shadow: 4px 4px 0px #1C1C1C !important;
-        background-color: #1C1C1C !important;
+        box-shadow: 4px 4px 0px currentColor !important;
     }
     
     /* Make certain elements more prominent */
@@ -501,53 +459,21 @@ st.markdown("""
     }
     
     /* ============================================== */
-    /* DARK MODE OVERRIDES - Must come after base styles */
+    /* DARK MODE SPECIFIC ADJUSTMENTS */
     /* ============================================== */
     
-    /* Target both browser dark mode and Streamlit's dark theme */
+    /* Dark mode gradient title - brighter for visibility */
     @media (prefers-color-scheme: dark) {
-        :root {
-            color-scheme: dark;
+        h1 {
+            background: linear-gradient(135deg, #4d94ff 0%, #ff9999 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
         }
     }
     
-    /* Streamlit dark mode using multiple selectors for compatibility */
-    [data-theme="dark"],
-    [data-theme="dark"] .stApp,
-    .stApp[data-theme="dark"],
-    html[data-theme="dark"],
-    :root[data-theme="dark"] {
-        background: linear-gradient(180deg, #1a1a1a 0%, #0e0e0e 100%) !important;
-    }
-    
-    /* Also target Streamlit's CSS custom properties */
-    :root {
-        --primary-background-color: #FBF7F0;
-    }
-    
-    [data-theme="dark"]:root,
-    :root[data-theme="dark"] {
-        --primary-background-color: #1a1a1a;
-    }
-    
-    /* Paper texture for dark mode */
-    [data-theme="dark"] .stApp::before,
-    .stApp[data-theme="dark"]::before {
-        opacity: 0.02;
-        background-image: 
-            repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 35px,
-                rgba(255, 255, 255, 0.02) 35px,
-                rgba(255, 255, 255, 0.02) 70px
-            ) !important;
-    }
-    
-    /* Dark mode typography - using multiple selectors */
-    [data-theme="dark"] h1,
-    .stApp[data-theme="dark"] h1,
-    html[data-theme="dark"] h1 {
+    [data-theme="dark"] h1 {
         background: linear-gradient(135deg, #4d94ff 0%, #ff9999 100%) !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
@@ -555,245 +481,44 @@ st.markdown("""
         text-fill-color: transparent !important;
     }
     
-    [data-theme="dark"] h2,
-    [data-theme="dark"] h3,
-    .stApp[data-theme="dark"] h2,
-    .stApp[data-theme="dark"] h3 {
-        color: #FFFFFF !important;
-    }
-    
-    [data-theme="dark"] .stMarkdown,
-    [data-theme="dark"] .stMarkdown p,
-    [data-theme="dark"] .stMarkdown li,
-    .stApp[data-theme="dark"] .stMarkdown {
-        color: #FFFFFF !important;
-    }
-    
-    /* Dark mode buttons - comprehensive selectors */
-    [data-theme="dark"] .stButton > button,
-    .stApp[data-theme="dark"] .stButton > button,
-    [data-theme="dark"] button[kind="secondary"] {
-        background-color: #2b2b2b !important;
-        color: #FFFFFF !important;
-        border-color: #FFFFFF !important;
-        box-shadow: 6px 6px 0px #FFFFFF !important;
-    }
-    
-    [data-theme="dark"] .stButton > button:hover,
-    .stApp[data-theme="dark"] .stButton > button:hover {
-        box-shadow: 4px 4px 0px #FFFFFF !important;
-    }
-    
-    [data-theme="dark"] .stButton > button:active {
-        box-shadow: 2px 2px 0px #FFFFFF !important;
-    }
-    
-    /* Dark mode primary buttons */
-    [data-theme="dark"] .stButton > button[kind="primary"],
-    [data-theme="dark"] button[kind="primary"] {
+    /* Dark mode primary buttons remain colorful */
+    [data-theme="dark"] .stButton > button[kind="primary"] {
         background: linear-gradient(135deg, #0066CC 0%, #0052A3 100%) !important;
         color: #FFFFFF !important;
         border-color: #0066CC !important;
         box-shadow: 6px 6px 0px #003d7a !important;
     }
     
-    /* Dark mode inputs - comprehensive */
-    [data-theme="dark"] .stTextInput > div > div > input,
-    [data-theme="dark"] .stTextArea > div > div > textarea,
-    [data-theme="dark"] input[type="text"],
-    [data-theme="dark"] textarea {
-        background-color: #2b2b2b !important;
-        color: #FFFFFF !important;
-        border-color: #FFFFFF !important;
-        box-shadow: 4px 4px 0px #FFFFFF !important;
-    }
-    
-    [data-theme="dark"] .stTextInput > div > div > input:focus,
-    [data-theme="dark"] .stTextArea > div > div > textarea:focus {
-        border-color: #4d94ff !important;
-        box-shadow: 4px 4px 0px #4d94ff !important;
-    }
-    
-    /* Dark mode select boxes - comprehensive */
-    [data-theme="dark"] .stSelectbox > div > div,
-    [data-theme="dark"] [data-baseweb="select"],
-    [data-theme="dark"] .css-1wa3eu0-placeholder {
-        background-color: #2b2b2b !important;
-        border-color: #FFFFFF !important;
-        box-shadow: 4px 4px 0px #FFFFFF !important;
-        color: #FFFFFF !important;
-    }
-    
-    [data-theme="dark"] [data-baseweb="menu"],
-    [data-theme="dark"] [role="listbox"],
-    [data-theme="dark"] .css-26l3qy-menu {
-        background-color: #2b2b2b !important;
-        border: 3px solid #FFFFFF !important;
-    }
-    
-    [data-theme="dark"] [role="option"],
-    [data-theme="dark"] [data-baseweb="menu"] li {
-        background-color: #2b2b2b !important;
-        color: #FFFFFF !important;
-    }
-    
-    [data-theme="dark"] [role="option"]:hover,
-    [data-theme="dark"] [data-baseweb="menu"] li:hover {
-        background-color: #3a3a3a !important;
-    }
-    
-    /* Dark mode chat messages - MOST IMPORTANT FIX */
-    [data-theme="dark"] .stChatMessage,
-    [data-theme="dark"] .st-emotion-cache-1c7y2kd,
-    [data-theme="dark"] .st-emotion-cache-4oy321,
-    [data-theme="dark"] [data-testid="stChatMessageContainer"],
-    .stApp[data-theme="dark"] .stChatMessage {
-        background-color: #2b2b2b !important;
-        border-color: #FFFFFF !important;
-        box-shadow: 4px 4px 0px #FFFFFF !important;
-        color: #FFFFFF !important;
-    }
-    
-    [data-theme="dark"] .stChatMessage [data-testid="stMarkdownContainer"],
-    [data-theme="dark"] .stChatMessage p,
-    [data-theme="dark"] .stChatMessage div {
-        color: #FFFFFF !important;
-    }
-    
-    /* Dark mode sidebar */
-    [data-theme="dark"] section[data-testid="stSidebar"],
-    [data-theme="dark"] .css-1d391kg {
-        background-color: #1a1a1a !important;
-        border-right: 4px solid #FFFFFF !important;
-    }
-    
-    [data-theme="dark"] section[data-testid="stSidebar"] .stButton > button {
-        background-color: #2b2b2b !important;
-        border-color: #FFFFFF !important;
-        box-shadow: 3px 3px 0px #FFFFFF !important;
-    }
-    
-    /* Dark mode expanders */
-    [data-theme="dark"] .streamlit-expanderHeader,
-    [data-theme="dark"] [data-testid="stExpander"] summary {
-        background-color: #2b2b2b !important;
-        border-color: #FFFFFF !important;
-        box-shadow: 3px 3px 0px #FFFFFF !important;
-        color: #FFFFFF !important;
-    }
-    
-    /* Dark mode columns */
-    [data-theme="dark"] [data-testid="column"],
-    [data-theme="dark"] .css-1d391kg {
-        background-color: rgba(43, 43, 43, 0.5) !important;
-        border-color: #3a3a3a !important;
-    }
-    
-    /* Dark mode alerts - comprehensive */
-    [data-theme="dark"] .stAlert,
-    [data-theme="dark"] .st-emotion-cache-1inwz65 {
-        background-color: #2b2b2b !important;
-        border-color: #FFFFFF !important;
-        color: #FFFFFF !important;
-    }
-    
-    [data-theme="dark"] .stInfo,
-    [data-theme="dark"] [data-baseweb="notification"][kind="info"] {
-        background-color: #1a3d5c !important;
-        border-color: #4d94ff !important;
-    }
-    
-    [data-theme="dark"] .stSuccess,
-    [data-theme="dark"] [data-baseweb="notification"][kind="positive"] {
-        background-color: #1a4d1a !important;
-        border-color: #4dff4d !important;
-    }
-    
-    [data-theme="dark"] .stWarning,
-    [data-theme="dark"] [data-baseweb="notification"][kind="warning"] {
-        background-color: #4d3d1a !important;
-        border-color: #ffcc4d !important;
-    }
-    
-    [data-theme="dark"] .stError,
-    [data-theme="dark"] [data-baseweb="notification"][kind="negative"] {
-        background-color: #4d1a1a !important;
-        border-color: #ff4d4d !important;
-    }
-    
-    /* Dark mode file uploader */
-    [data-theme="dark"] .stFileUploader,
-    [data-theme="dark"] [data-testid="stFileUploadDropzone"] {
-        border-color: #FFFFFF !important;
-        background-color: #2b2b2b !important;
-    }
-    
-    /* Dark mode special buttons */
-    [data-theme="dark"] .main-menu-button {
-        background: linear-gradient(135deg, #2b2b2b 0%, #1a1a1a 100%) !important;
-        border-color: #FFFFFF !important;
-        box-shadow: 12px 12px 0px #FFFFFF !important;
-        color: #FFFFFF !important;
-    }
-    
-    [data-theme="dark"] .main-menu-button:hover {
-        background: linear-gradient(135deg, #4d94ff 0%, #3d7acc 100%) !important;
-    }
-    
+    /* Dark mode voting buttons */
     [data-theme="dark"] .vote-button {
         background: linear-gradient(135deg, #cc9900 0%, #b38600 100%) !important;
-        border-color: #FFFFFF !important;
-        box-shadow: 8px 8px 0px #FFFFFF !important;
         color: #FFFFFF !important;
     }
     
-    /* Dark mode gradient borders */
+    /* Dark mode gradient borders - brighter */
     [data-theme="dark"] .gradient-border {
         background: linear-gradient(135deg, #4d94ff, #ff9999, #cc9900, #4d94ff) !important;
     }
     
-    [data-theme="dark"] .gradient-border > div {
-        background: #2b2b2b !important;
-        color: #FFFFFF !important;
-    }
-    
-    /* Dark mode code blocks */
-    [data-theme="dark"] .stCodeBlock,
-    [data-theme="dark"] pre {
-        border-color: #FFFFFF !important;
-        box-shadow: 4px 4px 0px #FFFFFF !important;
-    }
-    
-    /* Ensure all text is visible in dark mode - comprehensive */
-    [data-theme="dark"] p,
-    [data-theme="dark"] span,
-    [data-theme="dark"] div,
-    [data-theme="dark"] label,
-    [data-theme="dark"] .css-10trblm,
-    [data-theme="dark"] .css-16huue1 {
-        color: #FFFFFF;
-    }
-    
-    /* Dark mode tags and badges */
-    [data-theme="dark"] [data-baseweb="tag"] {
-        background-color: #3a3a3a !important;
-        color: #FFFFFF !important;
-    }
-    
-    /* Force dark mode on all emotion-cache classes that might be generated */
-    [data-theme="dark"] [class*="st-emotion-cache"] {
-        color: #FFFFFF;
-    }
-    
-    /* Additional catch-all for any elements that might have inline styles */
-    [data-theme="dark"] * {
-        border-color: inherit;
-    }
-    
-    /* Fix form containers in dark mode */
-    [data-theme="dark"] [data-testid="stForm"],
-    [data-theme="dark"] form {
-        background-color: transparent !important;
+    /* Paper texture overlay - subtle for both themes */
+    .stApp::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.02;
+        background-image: 
+            repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 35px,
+                rgba(128, 128, 128, 0.02) 35px,
+                rgba(128, 128, 128, 0.02) 70px
+            );
+        pointer-events: none;
+        z-index: 1;
     }
 </style>
 """, unsafe_allow_html=True)
