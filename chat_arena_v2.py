@@ -200,18 +200,14 @@ def format_response_with_tags(response: str) -> str:
     # Replace <innermonologue> tags with styled content
     def replace_inner_monologue(match):
         content = match.group(1).strip()
-        return f'''<div style="margin-bottom: 16px; opacity: 0.8;">
-            <strong>Inner monologue:</strong><br>
-            <em>{content}</em>
-        </div>'''
+        # Use markdown formatting instead of HTML
+        return f'\n**Inner monologue:**\n*{content}*\n'
     
     # Replace <output> tags with styled content
     def replace_output(match):
         content = match.group(1).strip()
-        return f'''<div style="margin-top: 16px;">
-            <strong style="color: #0066CC;">Final response:</strong><br>
-            <strong style="display: block; margin-top: 8px;">{content}</strong>
-        </div>'''
+        # Use markdown formatting with clear separation
+        return f'\n**Final response:**\n\n**{content}**\n'
     
     # Apply replacements
     formatted = response
@@ -762,7 +758,7 @@ elif st.session_state.chat_mode == "single":
                     with st.chat_message(msg["role"]):
                         if msg["role"] == "assistant":
                             # Display formatted response for assistant messages
-                            st.markdown(format_response_with_tags(msg["content"]), unsafe_allow_html=True)
+                            st.write(format_response_with_tags(msg["content"]))
                         else:
                             st.write(msg["content"])
         
@@ -816,7 +812,7 @@ elif st.session_state.chat_mode == "single":
                     st.session_state.messages.append({"role": "assistant", "content": response})
             
             # After streaming is complete, display the formatted version
-            response_placeholder.markdown(format_response_with_tags(response), unsafe_allow_html=True)
+            response_placeholder.write(format_response_with_tags(response))
             
             st.rerun()
         
@@ -851,7 +847,7 @@ elif st.session_state.chat_mode == "head2head":
                     with st.chat_message("user"):
                         st.write(msg["user"])
                     with st.chat_message("assistant"):
-                        st.markdown(format_response_with_tags(msg["left"]), unsafe_allow_html=True)
+                        st.write(format_response_with_tags(msg["left"]))
         
         with right_col:
             st.subheader("nisa B")
@@ -861,7 +857,7 @@ elif st.session_state.chat_mode == "head2head":
                     with st.chat_message("user"):
                         st.write(msg["user"])
                     with st.chat_message("assistant"):
-                        st.markdown(format_response_with_tags(msg["right"]), unsafe_allow_html=True)
+                        st.write(format_response_with_tags(msg["right"]))
         
         # Input form
         with st.form("chat_input", clear_on_submit=True):
@@ -945,8 +941,8 @@ elif st.session_state.chat_mode == "head2head":
                         right_placeholder.markdown(right_response)
             
             # After streaming is complete, display formatted versions
-            left_placeholder.markdown(format_response_with_tags(left_response), unsafe_allow_html=True)
-            right_placeholder.markdown(format_response_with_tags(right_response), unsafe_allow_html=True)
+            left_placeholder.write(format_response_with_tags(left_response))
+            right_placeholder.write(format_response_with_tags(right_response))
             
             # Add assistant responses
             st.session_state.messages_left.append({"role": "assistant", "content": left_response})
@@ -987,7 +983,7 @@ elif st.session_state.chat_mode == "head2head":
                 with st.chat_message("user"):
                     st.write(msg["user"])
                 with st.chat_message("assistant"):
-                    st.markdown(format_response_with_tags(msg["left"]), unsafe_allow_html=True)
+                    st.write(format_response_with_tags(msg["left"]))
         
         with right_col:
             st.markdown("""
@@ -999,7 +995,7 @@ elif st.session_state.chat_mode == "head2head":
                 with st.chat_message("user"):
                     st.write(msg["user"])
                 with st.chat_message("assistant"):
-                    st.markdown(format_response_with_tags(msg["right"]), unsafe_allow_html=True)
+                    st.write(format_response_with_tags(msg["right"]))
         
         # Voting buttons
         st.markdown("---")
