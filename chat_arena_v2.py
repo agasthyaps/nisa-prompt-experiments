@@ -511,12 +511,28 @@ st.markdown("""
         }
     }
     
+    /* Streamlit dark mode using multiple selectors for compatibility */
     [data-theme="dark"],
-    [data-theme="dark"] .stApp {
+    [data-theme="dark"] .stApp,
+    .stApp[data-theme="dark"],
+    html[data-theme="dark"],
+    :root[data-theme="dark"] {
         background: linear-gradient(180deg, #1a1a1a 0%, #0e0e0e 100%) !important;
     }
     
-    [data-theme="dark"] .stApp::before {
+    /* Also target Streamlit's CSS custom properties */
+    :root {
+        --primary-background-color: #FBF7F0;
+    }
+    
+    [data-theme="dark"]:root,
+    :root[data-theme="dark"] {
+        --primary-background-color: #1a1a1a;
+    }
+    
+    /* Paper texture for dark mode */
+    [data-theme="dark"] .stApp::before,
+    .stApp[data-theme="dark"]::before {
         opacity: 0.02;
         background-image: 
             repeating-linear-gradient(
@@ -528,8 +544,10 @@ st.markdown("""
             ) !important;
     }
     
-    /* Dark mode typography */
-    [data-theme="dark"] h1 {
+    /* Dark mode typography - using multiple selectors */
+    [data-theme="dark"] h1,
+    .stApp[data-theme="dark"] h1,
+    html[data-theme="dark"] h1 {
         background: linear-gradient(135deg, #4d94ff 0%, #ff9999 100%) !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
@@ -538,25 +556,31 @@ st.markdown("""
     }
     
     [data-theme="dark"] h2,
-    [data-theme="dark"] h3 {
+    [data-theme="dark"] h3,
+    .stApp[data-theme="dark"] h2,
+    .stApp[data-theme="dark"] h3 {
         color: #FFFFFF !important;
     }
     
     [data-theme="dark"] .stMarkdown,
     [data-theme="dark"] .stMarkdown p,
-    [data-theme="dark"] .stMarkdown li {
+    [data-theme="dark"] .stMarkdown li,
+    .stApp[data-theme="dark"] .stMarkdown {
         color: #FFFFFF !important;
     }
     
-    /* Dark mode buttons */
-    [data-theme="dark"] .stButton > button {
+    /* Dark mode buttons - comprehensive selectors */
+    [data-theme="dark"] .stButton > button,
+    .stApp[data-theme="dark"] .stButton > button,
+    [data-theme="dark"] button[kind="secondary"] {
         background-color: #2b2b2b !important;
         color: #FFFFFF !important;
         border-color: #FFFFFF !important;
         box-shadow: 6px 6px 0px #FFFFFF !important;
     }
     
-    [data-theme="dark"] .stButton > button:hover {
+    [data-theme="dark"] .stButton > button:hover,
+    .stApp[data-theme="dark"] .stButton > button:hover {
         box-shadow: 4px 4px 0px #FFFFFF !important;
     }
     
@@ -565,16 +589,19 @@ st.markdown("""
     }
     
     /* Dark mode primary buttons */
-    [data-theme="dark"] .stButton > button[kind="primary"] {
+    [data-theme="dark"] .stButton > button[kind="primary"],
+    [data-theme="dark"] button[kind="primary"] {
         background: linear-gradient(135deg, #0066CC 0%, #0052A3 100%) !important;
         color: #FFFFFF !important;
         border-color: #0066CC !important;
         box-shadow: 6px 6px 0px #003d7a !important;
     }
     
-    /* Dark mode inputs */
+    /* Dark mode inputs - comprehensive */
     [data-theme="dark"] .stTextInput > div > div > input,
-    [data-theme="dark"] .stTextArea > div > div > textarea {
+    [data-theme="dark"] .stTextArea > div > div > textarea,
+    [data-theme="dark"] input[type="text"],
+    [data-theme="dark"] textarea {
         background-color: #2b2b2b !important;
         color: #FFFFFF !important;
         border-color: #FFFFFF !important;
@@ -587,43 +614,55 @@ st.markdown("""
         box-shadow: 4px 4px 0px #4d94ff !important;
     }
     
-    /* Dark mode select boxes */
+    /* Dark mode select boxes - comprehensive */
     [data-theme="dark"] .stSelectbox > div > div,
-    [data-theme="dark"] [data-baseweb="select"] {
+    [data-theme="dark"] [data-baseweb="select"],
+    [data-theme="dark"] .css-1wa3eu0-placeholder {
         background-color: #2b2b2b !important;
         border-color: #FFFFFF !important;
         box-shadow: 4px 4px 0px #FFFFFF !important;
+        color: #FFFFFF !important;
     }
     
     [data-theme="dark"] [data-baseweb="menu"],
-    [data-theme="dark"] [role="listbox"] {
+    [data-theme="dark"] [role="listbox"],
+    [data-theme="dark"] .css-26l3qy-menu {
         background-color: #2b2b2b !important;
         border: 3px solid #FFFFFF !important;
     }
     
-    [data-theme="dark"] [role="option"] {
+    [data-theme="dark"] [role="option"],
+    [data-theme="dark"] [data-baseweb="menu"] li {
         background-color: #2b2b2b !important;
         color: #FFFFFF !important;
     }
     
-    [data-theme="dark"] [role="option"]:hover {
+    [data-theme="dark"] [role="option"]:hover,
+    [data-theme="dark"] [data-baseweb="menu"] li:hover {
         background-color: #3a3a3a !important;
     }
     
-    /* Dark mode chat messages */
-    [data-theme="dark"] .stChatMessage {
+    /* Dark mode chat messages - MOST IMPORTANT FIX */
+    [data-theme="dark"] .stChatMessage,
+    [data-theme="dark"] .st-emotion-cache-1c7y2kd,
+    [data-theme="dark"] .st-emotion-cache-4oy321,
+    [data-theme="dark"] [data-testid="stChatMessageContainer"],
+    .stApp[data-theme="dark"] .stChatMessage {
         background-color: #2b2b2b !important;
         border-color: #FFFFFF !important;
         box-shadow: 4px 4px 0px #FFFFFF !important;
         color: #FFFFFF !important;
     }
     
-    [data-theme="dark"] .stChatMessage [data-testid="stMarkdownContainer"] {
+    [data-theme="dark"] .stChatMessage [data-testid="stMarkdownContainer"],
+    [data-theme="dark"] .stChatMessage p,
+    [data-theme="dark"] .stChatMessage div {
         color: #FFFFFF !important;
     }
     
     /* Dark mode sidebar */
-    [data-theme="dark"] section[data-testid="stSidebar"] {
+    [data-theme="dark"] section[data-testid="stSidebar"],
+    [data-theme="dark"] .css-1d391kg {
         background-color: #1a1a1a !important;
         border-right: 4px solid #FFFFFF !important;
     }
@@ -635,7 +674,8 @@ st.markdown("""
     }
     
     /* Dark mode expanders */
-    [data-theme="dark"] .streamlit-expanderHeader {
+    [data-theme="dark"] .streamlit-expanderHeader,
+    [data-theme="dark"] [data-testid="stExpander"] summary {
         background-color: #2b2b2b !important;
         border-color: #FFFFFF !important;
         box-shadow: 3px 3px 0px #FFFFFF !important;
@@ -643,40 +683,47 @@ st.markdown("""
     }
     
     /* Dark mode columns */
-    [data-theme="dark"] [data-testid="column"] {
+    [data-theme="dark"] [data-testid="column"],
+    [data-theme="dark"] .css-1d391kg {
         background-color: rgba(43, 43, 43, 0.5) !important;
         border-color: #3a3a3a !important;
     }
     
-    /* Dark mode alerts */
-    [data-theme="dark"] .stAlert {
+    /* Dark mode alerts - comprehensive */
+    [data-theme="dark"] .stAlert,
+    [data-theme="dark"] .st-emotion-cache-1inwz65 {
         background-color: #2b2b2b !important;
         border-color: #FFFFFF !important;
         color: #FFFFFF !important;
     }
     
-    [data-theme="dark"] .stInfo {
+    [data-theme="dark"] .stInfo,
+    [data-theme="dark"] [data-baseweb="notification"][kind="info"] {
         background-color: #1a3d5c !important;
         border-color: #4d94ff !important;
     }
     
-    [data-theme="dark"] .stSuccess {
+    [data-theme="dark"] .stSuccess,
+    [data-theme="dark"] [data-baseweb="notification"][kind="positive"] {
         background-color: #1a4d1a !important;
         border-color: #4dff4d !important;
     }
     
-    [data-theme="dark"] .stWarning {
+    [data-theme="dark"] .stWarning,
+    [data-theme="dark"] [data-baseweb="notification"][kind="warning"] {
         background-color: #4d3d1a !important;
         border-color: #ffcc4d !important;
     }
     
-    [data-theme="dark"] .stError {
+    [data-theme="dark"] .stError,
+    [data-theme="dark"] [data-baseweb="notification"][kind="negative"] {
         background-color: #4d1a1a !important;
         border-color: #ff4d4d !important;
     }
     
     /* Dark mode file uploader */
-    [data-theme="dark"] .stFileUploader {
+    [data-theme="dark"] .stFileUploader,
+    [data-theme="dark"] [data-testid="stFileUploadDropzone"] {
         border-color: #FFFFFF !important;
         background-color: #2b2b2b !important;
     }
@@ -711,16 +758,19 @@ st.markdown("""
     }
     
     /* Dark mode code blocks */
-    [data-theme="dark"] .stCodeBlock {
+    [data-theme="dark"] .stCodeBlock,
+    [data-theme="dark"] pre {
         border-color: #FFFFFF !important;
         box-shadow: 4px 4px 0px #FFFFFF !important;
     }
     
-    /* Ensure all text is visible in dark mode */
+    /* Ensure all text is visible in dark mode - comprehensive */
     [data-theme="dark"] p,
     [data-theme="dark"] span,
     [data-theme="dark"] div,
-    [data-theme="dark"] label {
+    [data-theme="dark"] label,
+    [data-theme="dark"] .css-10trblm,
+    [data-theme="dark"] .css-16huue1 {
         color: #FFFFFF;
     }
     
@@ -728,6 +778,22 @@ st.markdown("""
     [data-theme="dark"] [data-baseweb="tag"] {
         background-color: #3a3a3a !important;
         color: #FFFFFF !important;
+    }
+    
+    /* Force dark mode on all emotion-cache classes that might be generated */
+    [data-theme="dark"] [class*="st-emotion-cache"] {
+        color: #FFFFFF;
+    }
+    
+    /* Additional catch-all for any elements that might have inline styles */
+    [data-theme="dark"] * {
+        border-color: inherit;
+    }
+    
+    /* Fix form containers in dark mode */
+    [data-theme="dark"] [data-testid="stForm"],
+    [data-theme="dark"] form {
+        background-color: transparent !important;
     }
 </style>
 """, unsafe_allow_html=True)
