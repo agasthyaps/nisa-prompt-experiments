@@ -683,7 +683,7 @@ if not st.session_state.conversation_started:
     with col1:
         st.markdown("""
         <div class="gradient-border" style="height: 250px; display: flex; align-items: center; justify-content: center;">
-            <div style="background: white; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                 <h2 style="font-size: 42px; margin: 0;">single chat</h2>
                 <p style="font-size: 18px; color: #666; margin-top: 10px;">Chat with a single version of nisa</p>
             </div>
@@ -697,7 +697,7 @@ if not st.session_state.conversation_started:
     with col2:
         st.markdown("""
         <div class="gradient-border" style="height: 250px; display: flex; align-items: center; justify-content: center;">
-            <div style="background: white; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                 <h2 style="font-size: 42px; margin: 0;">head-to-head</h2>
                 <p style="font-size: 18px; color: #666; margin-top: 10px;">Compare two versions of nisa</p>
             </div>
@@ -997,7 +997,7 @@ elif st.session_state.chat_mode == "head2head":
         
         with left_col:
             st.markdown("""
-            <div style="background: rgba(255,255,255,0.8); border: 4px solid #1C1C1C; padding: 20px; margin-bottom: 20px;">
+            <div style="border: 4px solid currentColor; padding: 20px; margin-bottom: 20px;">
                 <h2 style="text-align: center; margin-bottom: 20px;">nisa A</h2>
             </div>
             """, unsafe_allow_html=True)
@@ -1009,7 +1009,7 @@ elif st.session_state.chat_mode == "head2head":
         
         with right_col:
             st.markdown("""
-            <div style="background: rgba(255,255,255,0.8); border: 4px solid #1C1C1C; padding: 20px; margin-bottom: 20px;">
+            <div style="border: 4px solid currentColor; padding: 20px; margin-bottom: 20px;">
                 <h2 style="text-align: center; margin-bottom: 20px;">nisa B</h2>
             </div>
             """, unsafe_allow_html=True)
